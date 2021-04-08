@@ -1,0 +1,85 @@
+# depslib dependency file v1.0
+1617799969 source:c:\users\user\downloads\piscine 4 chargement grpahe &é ecriture codeblocks\piscine\main.cpp
+	<iostream>
+	<iostream>
+	<vector>
+	<fstream>
+	<string>
+	"Grapheski.h"
+
+1617800404 c:\users\user\downloads\piscine 4 chargement grpahe &é ecriture codeblocks\piscine\include\grapheski.h
+	<algorithm>
+	<iostream>
+	<iostream>
+	<vector>
+	<fstream>
+	<string>
+	"Arc.h"
+	"Point.h"
+
+1617708073 c:\users\user\downloads\piscine 4 chargement grpahe &é ecriture codeblocks\piscine\include\arc.h
+	<iostream>
+	<iostream>
+	<vector>
+	<fstream>
+	<string>
+	"Point.h"
+
+1617798979 c:\users\user\downloads\piscine 4 chargement grpahe &é ecriture codeblocks\piscine\include\point.h
+	<iostream>
+	<iostream>
+	<vector>
+	<fstream>
+	<string>
+
+1617708073 source:c:\users\user\downloads\piscine 4 chargement grpahe &é ecriture codeblocks\piscine\src\arc.cpp
+	"Arc.h"
+
+1617708073 source:c:\users\user\downloads\piscine 4 chargement grpahe &é ecriture codeblocks\piscine\src\grapheski.cpp
+	"Grapheski.h"
+
+1617708073 source:c:\users\user\downloads\piscine 4 chargement grpahe &é ecriture codeblocks\piscine\src\point.cpp
+	"Point.h"
+
+1617708073 source:c:\users\matth\onedrive\bureau\projet piscine\piscine dijkstra 2\piscine\src\arc.cpp
+	"Arc.h"
+
+1617708073 c:\users\matth\onedrive\bureau\projet piscine\piscine dijkstra 2\piscine\include\arc.h
+	<iostream>
+	<iostream>
+	<vector>
+	<fstream>
+	<string>
+	"Point.h"
+
+1617798979 c:\users\matth\onedrive\bureau\projet piscine\piscine dijkstra 2\piscine\include\point.h
+	<iostream>
+	<iostream>
+	<vector>
+	<fstream>
+	<string>
+
+1617708073 source:c:\users\matth\onedrive\bureau\projet piscine\piscine dijkstra 2\piscine\src\grapheski.cpp
+	"Grapheski.h"
+
+1617804708 c:\users\matth\onedrive\bureau\projet piscine\piscine dijkstra 2\piscine\include\grapheski.h
+	<algorithm>
+	<iostream>
+	<iostream>
+	<vector>
+	<fstream>
+	<string>
+	"Arc.h"
+	"Point.h"
+
+1617708073 source:c:\users\matth\onedrive\bureau\projet piscine\piscine dijkstra 2\piscine\src\point.cpp
+	"Point.h"
+
+1617804366 source:c:\users\matth\onedrive\bureau\projet piscine\piscine dijkstra 2\piscine\main.cpp
+	<iostream>
+	<iostream>
+	<vector>
+	<fstream>
+	<string>
+	"Grapheski.h"
+
