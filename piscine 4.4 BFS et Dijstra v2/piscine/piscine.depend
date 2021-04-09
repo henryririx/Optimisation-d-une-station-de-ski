@@ -1,0 +1,12 @@
+# depslib dependency file v1.0
+1617877179 source:c:\users\matth\onedrive\bureau\projet piscine\piscine 4.4 bfs et dijstra v2\piscine\main.cpp
+	<iostream>
+	<iostream>
+	<vector>
+	<fstream>
+	<string>
+	<algorithm>
+	<list>
+	<stack>
+	<queue>
+
