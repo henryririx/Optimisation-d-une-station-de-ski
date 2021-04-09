@@ -1,0 +1,826 @@
+#include <iostream>
+#include<iostream>
+#include<vector>
+#include<fstream>
+#include<string>
+#include <algorithm>
+#include <list>
+#include <stack>
+#include <queue>
+
+class Point
+{
+private:
+    int m_numeropoint;
+    std::string m_nomlieu;
+    int m_altitude;
+    int m_p; ///pour le constructeur
+    int distance=10000; ///distance a l'infini pour le di
+    std::vector<std::pair<Point*,int>> m_voisins;///listes d'adjacences
+public:
+    int getdistance()
+    {
+        return distance;
+    }
+
+    void setdistance(int d)
+    {
+        distance=d;
+    }
+
+    Point(int p)
+    {
+        m_p = p;
+    }
+    ~Point()
+    {
+
+    }
+    std::string  getnomlieu() const
+    {
+        return m_nomlieu;
+    }
+    int getaltitude() const
+    {
+        return m_altitude;
+    }
+
+    int getnumeropoint() const
+    {
+        return m_numeropoint;
+    }
+    void setnomlieu(std::string nom)
+    {
+        m_nomlieu=nom;
+    }
+
+    void setaltitude(int alti)
+    {
+        m_altitude=alti;
+    }
+
+    void setnumeropoint(int num)
+    {
+        m_numeropoint=num;
+    }
+    std::vector <std::pair<Point*,int>> getAdj()const
+    {
+        return m_voisins;
+    }
+
+    void afficher() const
+    {
+
+        for(auto const elem:m_voisins)
+        {
+            std::cout<<elem.first->getnumeropoint()<<" avec duree:";
+            std::cout<<elem.second<<" ,";
+        }
+
+    }
+    void ajouterSucc(Point* s, int pond){
+        if(s!= nullptr)
+        {
+            std::pair<Point*,int>succ;
+            succ.first=s;
+            succ.second=pond;
+            m_voisins.push_back(succ);
+        }
+
+    }
+    void reset()
+    {
+        distance=10000;
+    }
+    bool verification(int num)
+    {
+        for(int i=0;i<m_voisins.size();i++)
+        {
+            if(m_voisins[i].first->getnumeropoint()==num);
+            {
+
+                return true;
+            }
+        }
+        return false;
+    }
+
+};
+class Point;
+class Arc
+{
+private:///rajouter le temps de trajet (calcul entre altitude et données du projets)
+    Point*m_p1;///a partir de l altitude des 2 points on pourra calculer le temps de trajets
+    Point*m_p2;
+    int m_numerotrajet;
+    std::string m_nomtrajet;
+    std::string m_typetrajet;
+    int m_depart;
+    int m_arrive;
+    int m_duree;
+    int m_arc; // constructeur
+
+public:
+
+
+    Arc(int arc)
+    {
+        m_arc = arc;
+    }
+
+    int getnumerotrajet() const
+    {
+        return m_numerotrajet;
+    }
+
+    int getdepart() const
+    {
+        return m_depart;
+    }
+
+    int getarrivee() const
+    {
+        return m_arrive;
+    }
+
+    std::string gettypetrajet() const
+    {
+        return m_typetrajet;
+    }
+
+    std::string getnomtrajet() const
+    {
+        return m_nomtrajet;
+    }
+
+    Point* getp1() const
+    {
+        return m_p1;
+    }
+
+    Point* getp2() const
+    {
+        return m_p2;
+    }
+
+    void setnumerotrajet(int num)
+    {
+        m_numerotrajet=num;
+    }
+
+    void setdepart(int depart)
+    {
+        m_depart=depart;
+    }
+
+    void setarrivee(int arrivee)
+    {
+        m_arrive=arrivee;
+    }
+
+    void settypetrajet(std::string type)
+    {
+        m_typetrajet =type;
+    }
+
+    void setnomtrajet(std::string nom)
+    {
+        m_nomtrajet=nom;
+    }
+
+    void setp1(Point *P1)
+    {
+        m_p1=P1;
+    }
+
+    void setp2(Point *P2)
+    {
+        m_p2=P2;
+    }
+
+    int getduree() const
+    {
+        return m_duree;
+    }
+
+    void setDuree(int duree)
+    {
+        m_duree=duree;
+    }
+
+
+};
+
+class Grapheski {
+private:
+
+    ///pour le graphe
+    std::vector<Point *> m_point;    ///vecteur de pointeurs sur point
+    std::vector<Arc *> m_trajet;  ///vecteur de trajet
+    int ordre;  /// nombre de points
+    int taille;   ///nombre de trajets
+
+public:
+    std::vector<Point *> getpoint() const {
+        return m_point;
+    }
+
+    void setpoint(std::vector<Point *> point) {
+        m_point = point;
+    }
+
+    std::vector<Arc *> gettrajet() const {
+        return m_trajet;
+    }
+
+    void settrajet(std::vector<Arc *> trajet) {
+        m_trajet = trajet;
+    }
+
+    int getnbpoint() const {
+        return ordre;
+    }
+
+    int getdureeentre2point(int depart,int arrivee)
+    {
+        for(auto const elem:m_trajet)
+        {
+            if((elem->getdepart()==depart)&&(elem->getarrivee()))
+            {
+                return elem->getduree();
+            }
+        }
+    }
+    int getnbtrajet() const {
+        return taille;
+    }
+
+    Grapheski(std::string fichier, int choix) {
+        if(choix==1)
+        {
+            std::ifstream ifs{fichier};
+            if (ifs.fail())
+                throw std::runtime_error("Probleme lecture orientation du graphe");
+            ifs >> ordre;
+            if (ifs.fail())
+                throw std::runtime_error("Probleme lecture ordre du graphe");
+            for (int i = 0; i < ordre; ++i)
+                m_point.push_back(new Point{i});
+
+            std::string nom;
+            int num;
+            int alt;
+            for (int i = 0; i < ordre; i++) {
+                ifs >> num >> nom >> alt;
+                m_point[i]->setnomlieu(nom);
+                m_point[i]->setaltitude(alt);
+                m_point[i]->setnumeropoint(num);
+
+            }
+            if (ifs.fail())
+                throw std::runtime_error("Probleme lecture taille du graphe");
+            ifs >> taille;
+            if (fichier == "data_arcs.txt") {
+                int num1, arriv, depart;
+                std::string moy, nom2;
+                for (int i = 0; i < taille; i++) {
+                    ifs >> num1 >> nom2 >> moy >> depart >> arriv;
+                    m_trajet.push_back(new Arc(i));
+                    m_trajet[i]->setdepart(depart);
+                    m_trajet[i]->setp1(m_point[depart - 1]);
+                    m_trajet[i]->setarrivee(arriv);
+                    m_trajet[i]->setp2(m_point[arriv - 1]);
+                    m_trajet[i]->setnomtrajet(nom2);
+                    m_trajet[i]->setnumerotrajet(num1);
+                    m_trajet[i]->settypetrajet(moy);
+
+                    m_point[depart - 1]->ajouterSucc(m_point[arriv - 1], 0);
+
+                }
+            }
+            if (fichier == "duree.txt") {
+                int num1, arriv, depart, duree;
+                std::string moy, nom2;
+                for (int i = 0; i < taille; i++) {
+                    ifs >> num1 >> nom2 >> moy >> depart >> arriv >> duree;
+                    m_trajet.push_back(new Arc(i));
+                    m_trajet[i]->setdepart(depart);
+                    m_trajet[i]->setp1(m_point[depart - 1]);
+                    m_trajet[i]->setarrivee(arriv);
+                    m_trajet[i]->setp2(m_point[arriv - 1]);
+                    m_trajet[i]->setnomtrajet(nom2);
+                    m_trajet[i]->setnumerotrajet(num1);
+                    m_trajet[i]->settypetrajet(moy);
+                    m_trajet[i]->setDuree(duree);
+                    m_point[depart - 1]->ajouterSucc(m_point[arriv - 1], duree);
+
+                }
+            }
+
+        }
+        if(choix==2)
+        {
+            BorneInterractive(fichier);
+        }
+
+
+
+    }
+
+    void afficherGraphe() const {
+        std::cout << std::endl << "graphe ";
+        std::cout << "ordre = " << ordre << std::endl << "  ";
+        std::cout << "listes d'adjacence :" << std::endl;
+        for (auto s : m_point) {
+            std::cout << " le point " << s->getnumeropoint() << " a pour adjacent: ";
+            s->afficher();
+            std::cout << std::endl;
+        }
+    }
+
+    void tempstrajet() {
+        int d; //distance entre 2 points
+        for (int i = 0; i < m_trajet.size(); i++) {
+            if (m_trajet[i]->getp1()->getaltitude() > m_trajet[i]->getp2()->getaltitude()) {
+                d = m_trajet[i]->getp1()->getaltitude() -
+                    m_trajet[i]->getp2()->getaltitude(); // calcul distance entre les deux points}
+            } else {
+                d = m_trajet[i]->getp2()->getaltitude() -
+                    m_trajet[i]->getp1()->getaltitude(); // calcul distance entre les deux points}
+            }
+
+            //pour la descente
+
+            if (m_trajet[i]->gettypetrajet() == "V")   /// si la piste est verte
+            {
+                m_trajet[i]->setDuree(((60 * 5) * d) / 100);     /// donne le temps en SECONDEs
+            }
+
+
+            if (m_trajet[i]->gettypetrajet() == "R")  /// si la piste est rouge
+            {
+                m_trajet[i]->setDuree(((60 * 3) * d) / 100);
+            }
+
+
+            if (m_trajet[i]->gettypetrajet() == "B") /// si la piste est bleue
+            {
+                m_trajet[i]->setDuree(((60 * 4) * d) / 100);
+            }
+
+
+            if (m_trajet[i]->gettypetrajet() == "N") /// si la piste est noire
+            {
+                m_trajet[i]->setDuree(((60 * 2) * d) / 100);
+            }
+
+
+            if (m_trajet[i]->gettypetrajet() == "KL") {
+                m_trajet[i]->setDuree((10 * d) / 100);// le temps est deja en secondes
+            }
+
+
+            if (m_trajet[i]->gettypetrajet() == "SURF") {
+                m_trajet[i]->setDuree(((60 * 10) * d) / 100);
+            }
+// pour les remontees
+
+
+
+            if (m_trajet[i]->gettypetrajet() == "TPH") {
+                m_trajet[i]->setDuree((4 * 60 + (((60 * 2) * d)) / 100));
+            }
+
+
+            if (m_trajet[i]->gettypetrajet() == "TC") {
+                m_trajet[i]->setDuree((2 * 60 + (((60 * 3) * d)) / 100));
+            }
+
+
+            if (m_trajet[i]->gettypetrajet() == "TSD") {
+                m_trajet[i]->setDuree((60 + (((60 * 3) * d)) / 100));
+            }
+            if (m_trajet[i]->gettypetrajet() == "TS") {
+
+
+                m_trajet[i]->setDuree((60 + (((60 * 4) * d)) / 100));
+            }
+            if (m_trajet[i]->gettypetrajet() == "TK") {
+                m_trajet[i]->setDuree((60 + (((60 * 4) * d)) / 100));
+            }
+/// BUS ?????
+
+
+
+            if (m_trajet[i]->gettypetrajet() == "BUS") {
+                if ((m_trajet[i]->getnomtrajet() == "navette2000-1600") ||
+                    m_trajet[i]->getnomtrajet() == "navette1600-2000") {
+                    m_trajet[i]->setDuree(40 * 60);
+                } else if ((m_trajet[i]->getnomtrajet() == "navette1600-1800") ||
+                           m_trajet[i]->getnomtrajet() == "navette1800-1600") {
+                    m_trajet[i]->setDuree(30 * 60);
+                }
+            }
+
+        }
+
+
+
+    }
+
+    void fichierecriture(std::string fichier)/// fichier d'écriture pour les durées
+
+    {
+        std::string const nomFichier(fichier);
+
+        std::ofstream monFlux(nomFichier.c_str());//Déclaration d'un flux permettant d'écrire dans un fichier
+        //std::ofstream monFlux(nomFichier.c_str(), std::ios::app); // si il existe deja ? peut on faire ca pr rajouter les durées
+        if (monFlux)  //On teste si tout est OK
+        {
+            monFlux << ordre << std::endl;
+            //Tout est OK, on peut utiliser le fichier
+            for (int i = 0; i < ordre; i++) {
+
+
+                monFlux << m_point[i]->getnumeropoint() << "\t" << m_point[i]->getnomlieu() << "\t"
+                        << m_point[i]->getaltitude() << std::endl;
+
+
+            }
+            monFlux << taille << std::endl;
+            for (int i = 0; i < taille; i++) {
+
+
+                monFlux << m_trajet[i]->getnumerotrajet() << "\t" << m_trajet[i]->getnomtrajet() << "\t"
+                        << m_trajet[i]->gettypetrajet() << "\t" << m_trajet[i]->getp1()->getnumeropoint()
+                        << "\t" << m_trajet[i]->getp2()->getnumeropoint() << "\t" << m_trajet[i]->getduree()
+                        << std::endl;
+
+
+            }
+        } else {
+            std::cout << "ERREUR: Impossible d'ouvrir le fichier." << std::endl;
+        }
+        monFlux.close();
+
+    }
+
+    void afficherEntrantSortant() {
+        int saisie;
+        std::cout << " saisir un point pour avoir les trajets sortants et entrants " << std::endl;
+        std::cin >> saisie;
+        std::cout << " les trajets sortants sont : ";
+        for (auto const elem:m_trajet) {
+            if (elem->getdepart() == saisie) {
+                std::cout << elem->getnomtrajet() << " ";
+            }
+        }
+        std::cout << std::endl;
+        std::cout << " les trajets entrants sont : ";
+        for (auto const elem:m_trajet) {
+            if (elem->getarrivee() == saisie) {
+                std::cout << elem->getnomtrajet() << " ";
+            }
+        }
+        std::cout << std::endl;
+    }
+
+
+    void afficheTrajet() {
+        std::string trajet;
+        std::cout << " saisir le nom d'un trajet" << std::endl;
+        std::cin >> trajet;
+        for (auto const elem:m_trajet) {
+            if (elem->getnomtrajet() == trajet) {
+                std::cout << " le trajet est de type " << elem->gettypetrajet() << " ,le point de depart est "
+                          << elem->getdepart() << " , l'arrivée est " << elem->getarrivee() << " avec une duree :"
+                          << elem->getduree() << " secondes " << std::endl;
+            }
+        }
+    }
+
+    std::vector<int> djikstra(int init, int fin) {
+        if (init == 29) {
+            std::cout << "pas de chemin partant de 29" << std::endl;
+        }
+
+        std::vector<int> marquage(ordre, 0);
+        std::vector<int> pred(ordre, -1);///pour avoir le plus court chemin
+        std::vector<Point *> djik;///ou on stocke les sommets a parcourir apres (les adjacents du sommet etudie)
+        marquage[init - 1] = 1;/// premier sommet visite est le sommet initial
+        m_point[init - 1]->setdistance(0);///le sommet init a une distance 0 de lui même
+        Point *tmp = m_point[init - 1];///sommet qu'on "etudie" (ses adjacents, leur poid)
+        while (marquage[fin - 1] != 1)///tant qu'on est pas arrivé au sommet final
+        {
+            /// on regarde la distance init-voisins
+            for (auto elem:tmp->getAdj()) {
+                if (marquage[elem.first->getnumeropoint() - 1] != 1) /// on verifie si les adjacents sont visités
+                {
+                    djik.push_back(elem.first);///on stocke le sommet adjacent dans le vecteur pour l'etudier apres
+
+                    if (elem.first->getdistance() == 10000)/// si pas encore de distance
+                    {
+                        elem.first->setdistance(elem.second +
+                                                tmp->getdistance());///on attribut a chaque sommet voisin sa distance au sommet initial
+                        pred[elem.first->getnumeropoint() - 1
+
+
+                        ] = tmp->getnumeropoint();///on leur donne leur predecesseur
+                    } else///s'il a deja une distance
+                    {
+                        if (elem.first->getdistance() >
+                            elem.second + tmp->getdistance())///on verifie si c la plus petite
+                        {
+                            elem.first->setdistance(elem.second + tmp->getdistance());///si c pas le cas on la change
+                            pred[elem.first->getnumeropoint() -
+                                 1] = tmp->getnumeropoint();///et on lui "refresh son predecesseur"
+                        }
+                    }
+                }
+            }
+
+            ///trie avec sort le djik par rapport au distance du+ petit au+grand
+            std::sort(djik.begin(), djik.end(), [](Point *p1, Point *p2) //tri du tableau
+            {
+                return p1->getdistance() < p2->getdistance();
+            });
+
+            tmp = djik[0];///pour enlever le tmp du vecteur
+            marquage[tmp->getnumeropoint() - 1] = 1;
+            std::vector<Point *> nouveau = djik;
+            djik.clear();
+            for (int i = 0; i < nouveau.size(); i++) {
+                if (nouveau[i]->getnumeropoint() != tmp->getnumeropoint()) {
+                    djik.push_back(nouveau[i]);
+                }
+            }
+        }
+        std::cout << "La distance totale est de : " << tmp->getdistance();
+        return pred;
+    }
+
+    void affichageDjik(std::vector<int> pred, int init, int fin) {
+        std::cout << std::endl;
+        std::cout << "affichage du chemin le plus court entre le sommet " << init << "et le sommet " << fin << " : "
+                  << std::endl;
+        int predecesseur = fin;
+        std::cout << fin << "<--";
+        while (predecesseur != init)///tant qu'on arrive pas au sommet uinitiale on remonte la chaine de predecesseur
+        {
+            std::cout << pred[predecesseur - 1];
+            if (pred[predecesseur - 1] != init) {
+                std::cout << "<--";
+            }
+
+            predecesseur = pred[predecesseur - 1];
+        }
+        std::cout<<std::endl;
+    }
+
+    void resetD() {
+        for (int i = 0; i < 37; i++) {
+            m_point[i]->reset();
+        }
+    }
+
+    void saisieafficheDijsktra() {
+        std::vector<int> pred;
+        int init, fin;
+        std::cout<<" avoir le plus court chemin avec Dijsktra"<<std::endl;
+        do
+        {
+            std::cout << "Depart ?" << std::endl;
+            std::cin >> init;
+            if (init == 6 || init == 29) {
+                std::cout << "Le sommet " << init << " n'a pas de sommet adjacent" << std::endl;
+            }
+            if (init <= 0) {
+                std::cout << "Il n'existe pas de sommet negatifs" << std::endl;
+            }
+            if (init >= 38) {
+                std::cout << "Le sommet le plus grand est 37 " << std::endl;
+            }
+        }
+        while (init >= 38 || init == 29 || init == 6 || init <= 0);
+        do {
+            std::cout << "Arrivee ?" << std::endl;
+            std::cin >> fin;
+            if (fin == 6 || fin == 29) {
+                std::cout << "Le sommet " << fin << " n'a pas de sommet adjacent" << std::endl;
+            }
+            if (fin <= 0) {
+                std::cout << "Il n'existe pas de sommet negatifs" << std::endl;
+            }
+            if (init >= 38) {
+                std::cout << "Le sommet le plus grand est 37 " << std::endl;
+            }
+        } while (fin >= 38 || fin == 29 || fin == 6 || fin <= 0);
+
+        pred = djikstra(init, fin);
+        affichageDjik(pred, init, fin);
+
+    }
+    ///issue du tp1 fait avec Coumba et Henry
+    void BFS() {
+        int s;
+        do {
+            std::cout<<"saisir point existant "<<std::endl;
+            std::cin>>s;
+        }while((s<1)||(s>37));
+        Point *so;
+        int numero;
+        std::vector<Point *> Sdecouvert; // création d'un vecteur pour marquer les sommets découverts
+        std::queue<Point *> parcours; // parcours en BFS
+        std::vector<int> l_preds; // liste des prédecesseurs
+
+        for (int i = 0; i < ordre; i++) {
+            l_preds.push_back(-1);
+        }
+
+        bool *marquer = new bool[ordre]; // création d'un booléen pour savoir si nous sommes passés par le sommet ou pas
+        for (int i = 1; i < ordre+1; i++) {
+            marquer[i] = false; // on initialise tout les sommets en mode non découverts
+        }
+
+
+        marquer[s] = true; // on marque le sommet initial en découvert
+        parcours.push(m_point[s - 1]);
+
+        while (!parcours.empty()) {
+
+            so = parcours.front();
+            parcours.pop();
+
+            for (auto it : so->getAdj()) {
+                if (!marquer[it.first->getnumeropoint()]) {
+                    marquer[it.first->getnumeropoint()] = true;
+                    parcours.push(m_point[it.first->getnumeropoint()-1]);
+                    l_preds[it.first->getnumeropoint()] = so->getnumeropoint();
+                }
+            }
+        }
+        std::cout << "Parcours BFS" << std::endl; // affichage du parcours en BFS
+        std::cout<<"etape<--point enfile<--point enfile"<<std::endl;
+        for (int i = 1; i < ordre+1; i++) {
+            std::cout << i;
+            std::cout << "<---";
+            int numero = l_preds[i];
+
+            while (numero != -1) {
+                std::cout << numero;
+
+                numero = l_preds[numero];
+                if (numero != -1)
+                    std::cout << "<---";
+            }
+            std::cout << std::endl;
+        }
+
+    }
+    std::string testDem(int dem)
+    { std::string demande;
+        if(dem==1)
+        {  demande="TC";
+            return demande;
+        }
+        if(dem==2)
+        {  demande="TK";
+            return demande;
+        }
+        if(dem==3)
+        {  demande="TS";
+            return demande;
+        }
+        if(dem==4)
+        {  demande="TPH";
+            return demande;
+        }
+        if(dem==5)
+        {  demande="TSD";
+            return demande;
+        }
+        if(dem==6)
+        {  demande="B";
+            return demande;
+        }
+        if(dem==7)
+        {  demande="R";
+            return demande;
+        }
+        if(dem==8)
+        {  demande="N";
+            return demande;
+        }
+    }
+    void BorneInterractive(std::string fichier) {
+        std::string demande;
+        int dem;
+        do{
+            std::cout<<"enlever tc taper 1"<<std::endl;
+            std::cout<<"enlever tk taper 2"<<std::endl;
+            std::cout<<"enlever ts taper 3"<<std::endl;
+            std::cout<<"enlever tph taper 4"<<std::endl;
+            std::cout<<"enlever tsd taper 5"<<std::endl;
+            std::cout<<"enlever piste bleu taper 6"<<std::endl;
+            std::cout<<"enlever piste rouge taper 7"<<std::endl;
+            std::cout<<"enlever piste noire taper 8"<<std::endl;
+            std::cin>>dem;
+        }while((dem<1)||(dem>8));
+
+        demande=testDem(dem);
+
+        std::ifstream ifs{fichier};
+        if (ifs.fail())
+            throw std::runtime_error("Probleme lecture orientation du graphe");
+        ifs >> ordre;
+        if (ifs.fail())
+            throw std::runtime_error("Probleme lecture ordre du graphe");
+        for (int i = 0; i < ordre; ++i)
+            m_point.push_back(new Point{i});
+
+        std::string nom;
+        int num;
+        int alt;
+        for (int i = 0; i < ordre; i++) {
+            ifs >> num >> nom >> alt;
+            m_point[i]->setnomlieu(nom);
+            m_point[i]->setaltitude(alt);
+            m_point[i]->setnumeropoint(num);
+
+        }
+        if (ifs.fail())
+            throw std::runtime_error("Probleme lecture taille du graphe");
+        ifs >> taille;
+        int nouvelletaille=0;
+        if (fichier == "data_arcs.txt") {
+            int num1, arriv, depart;
+            std::string moy, nom2;
+            for (int i = 0; i < taille; i++) {
+                ifs >> num1 >> nom2 >> moy >> depart >> arriv;
+                m_trajet.push_back(new Arc(i));
+                m_trajet[i]->setdepart(depart);
+                m_trajet[i]->setp1(m_point[depart - 1]);
+                m_trajet[i]->setarrivee(arriv);
+                m_trajet[i]->setp2(m_point[arriv - 1]);
+                m_trajet[i]->setnomtrajet(nom2);
+                m_trajet[i]->setnumerotrajet(num1);
+                m_trajet[i]->settypetrajet(moy);
+
+                m_point[depart - 1]->ajouterSucc(m_point[arriv - 1], 0);
+
+            }
+        }
+        int j=0;
+
+        if (fichier == "duree.txt") {
+            int num1, arriv, depart, duree;
+            std::string moy, nom2;
+            for (int i = 0; i < taille; i++) {
+                ifs >> num1 >> nom2 >> moy >> depart >> arriv >> duree;
+
+                if(moy!=demande)
+                {nouvelletaille++;
+
+                    m_trajet.push_back(new Arc(j));
+                    m_trajet[j]->setdepart(depart);
+                    m_trajet[j]->setp1(m_point[depart - 1]);
+                    m_trajet[j]->setarrivee(arriv);
+                    m_trajet[j]->setp2(m_point[arriv - 1]);
+                    m_trajet[j]->setnomtrajet(nom2);
+                    m_trajet[j]->setnumerotrajet(j+1);
+                    m_trajet[j]->settypetrajet(moy);
+                    m_trajet[j]->setDuree(duree);
+                    m_point[depart - 1]->ajouterSucc(m_point[arriv - 1], duree);
+                    j++;
+                }
+
+
+            }
+            taille=nouvelletaille;
+        }
+
+
+
+    }
+
+
+};
+int main() {
+
+
+    Grapheski g("duree.txt",2);/// 1 sans borne interractive 2 avec borne interractive
+
+    g.fichierecriture("BorneInteractive.txt");
+    g.afficherGraphe();
+    // g.tempstrajet();
+    //g.afficheTrajet();///4.3 affiche un trajet saisie, le type et la duréee, depart et arrivéé
+    //g.afficherEntrantSortant();///4.3 pour un point affiche les trajets partants et entrants
+    //g.fichierecriture("duree.txt");
+    g.BFS();
+    g.saisieafficheDijsktra();
+
+
+    return 0;
+}
+
+
